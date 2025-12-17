@@ -1,98 +1,74 @@
-// ======================
-// УПРАВЛЕНИЕ (СНАЧАЛА!)
-// ======================
-const keys = {};
+import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
 
-document.addEventListener("keydown", (e) => {
-    keys[e.key.toLowerCase()] = true;
-});
-
-document.addEventListener("keyup", (e) => {
-    keys[e.key.toLowerCase()] = false;
-});
-
-// ======================
+// -------------------
 // СЦЕНА
-// ======================
+// -------------------
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x87ceeb);
 
-// ======================
+// -------------------
 // КАМЕРА
-// ======================
+// -------------------
 const camera = new THREE.PerspectiveCamera(
-    75,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    1000
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
 );
-camera.position.set(5, 5, 10);
+camera.position.set(0, 2, 5);
 
-// ======================
+// -------------------
 // РЕНДЕР
-// ======================
+// -------------------
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
-// ======================
+// -------------------
 // СВЕТ
-// ======================
-const sun = new THREE.DirectionalLight(0xffffff, 1);
-sun.position.set(10, 20, 10);
-scene.add(sun);
+// -------------------
+const light = new THREE.DirectionalLight(0xffffff, 1);
+light.position.set(5, 10, 5);
+scene.add(light);
 
-const ambient = new THREE.AmbientLight(0xffffff, 0.5);
-scene.add(ambient);
+scene.add(new THREE.AmbientLight(0xffffff, 0.4));
 
-// ======================
-// БЛОКИ
-// ======================
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshStandardMaterial({ color: 0x00aa00 });
+// -------------------
+// ЗЕМЛЯ (платформа)
+// -------------------
+const groundGeometry = new THREE.BoxGeometry(20, 1, 20);
+const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x228B22 });
+const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+ground.position.y = -0.5;
+scene.add(ground);
 
-// Земля
-for (let x = -10; x <= 10; x++) {
-    for (let z = -10; z <= 10; z++) {
-        const block = new THREE.Mesh(geometry, material);
-        block.position.set(x, 0, z);
-        scene.add(block);
-    }
-}
+// -------------------
+// КУБ ДЛЯ ПРОВЕРКИ
+// -------------------
+const cubeGeometry = new THREE.BoxGeometry(1, 1, 1);
+const cubeMaterial = new THREE.MeshStandardMaterial({ color: 0x8B4513 });
+const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+cube.position.set(0, 0.5, 0);
+scene.add(cube);
 
-// ======================
-// ДВИЖЕНИЕ
-// ======================
-function movePlayer() {
-    const speed = 0.15;
+// -------------------
+// ИЗМЕНЕНИЕ РАЗМЕРА
+// -------------------
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
 
-    if (keys["w"]) camera.position.z -= speed;
-    if (keys["s"]) camera.position.z += speed;
-    if (keys["a"]) camera.position.x -= speed;
-    if (keys["d"]) camera.position.x += speed;
-}
-
-// ======================
+// -------------------
 // АНИМАЦИЯ
-// ======================
+// -------------------
 function animate() {
-    requestAnimationFrame(animate);
-    movePlayer();
-    camera.lookAt(
-        camera.position.x,
-        camera.position.y - 1,
-        camera.position.z - 1
-    );
-    renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+
+  cube.rotation.y += 0.01;
+
+  renderer.render(scene, camera);
 }
 
 animate();
-
-// ======================
-// RESIZE
-// ======================
-window.addEventListener("resize", () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-});
