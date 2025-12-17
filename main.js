@@ -27,6 +27,14 @@ const material = new THREE.MeshStandardMaterial({ color: 0x00aa00 });
 const block = new THREE.Mesh(geometry, material);
 scene.add(block);
 
+for (let x = -10; x <= 10; x++) {
+    for (let z = -10; z <= 10; z++) {
+        const ground = new THREE.Mesh(geometry, material);
+        ground.position.set(x, 0, z);
+        scene.add(ground);
+    }
+}
+
 // Анимация
 function animate() {
     requestAnimationFrame(animate);
