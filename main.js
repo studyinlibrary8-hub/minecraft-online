@@ -41,3 +41,20 @@ function animate() {
     renderer.render(scene, camera);
 }
 animate();
+const keys = {};
+
+document.addEventListener("keydown", e => keys[e.key] = true);
+document.addEventListener("keyup", e => keys[e.key] = false);
+
+function move() {
+    if (keys["w"]) camera.position.z -= 0.1;
+    if (keys["s"]) camera.position.z += 0.1;
+    if (keys["a"]) camera.position.x -= 0.1;
+    if (keys["d"]) camera.position.x += 0.1;
+}
+
+function animate() {
+    requestAnimationFrame(animate);
+    move();
+    renderer.render(scene, camera);
+}
